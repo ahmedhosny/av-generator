@@ -1,3 +1,219 @@
+//
+// VAR
+//
+var XY; // This is the real dimension of the dicom in mm
+var CurrentSlice;
+//
+// XTK
+//
+window.onload = function() {
+
+    // VARIABLES
+    var v;
+    var dataURLArray = [];
+    var sliceZ;
+
+
+    // create a new test_renderer
+    sliceZ = new X.renderer2D();
+    sliceZ.container = 'container1';
+    sliceZ.orientation = 'Z';
+    sliceZ.init();
+
+    // r.camera.position = [0, 300, 0];
+
+    // we create the X.volume container and attach all DICOM files
+    v = new X.volume();
+    // map the data url to each of the slices
+    // v.file = 'https://mecano-eq.s3.amazonaws.com/IM-0008-0282-0001.dcm' 
+    // http://x.babymri.org/?vol.nrrd
+    // https://mecano-eq.s3.amazonaws.com/2901.nrrd
+    // initiateX();
+
+
+    function initiateX(){
+
+        
+
+        // add the volume
+        sliceZ.add(v);
+
+        // .. and render it
+        sliceZ.render();
+
+        // r.onShowtime = function() {
+
+        // // activate volume rendering
+        // v.volumeRendering = true;
+        // v.lowerThreshold = 0;
+        // v.windowLower = 0;
+        // v.windowHigh = 1000;
+        // v.minColor = [0, 0.06666666666666667, 1];
+        // v.maxColor = [0.5843137254901961, 1, 0];
+        // v.opacity = 0.9;
+
+        // };
+
+        // volume = v;
+
+        sliceZ.onShowtime = function(){
+            calculateDim(v);
+            $("#container1").find("canvas").css('cursor' , 'crosshair');
+            document.getElementById('text1a').innerHTML = "Select the 7 points";
+        }
+
+        sliceZ.onScroll = function(){
+            console.log("sliceZ has been scrolled");
+            console.log(v.indexZ);
+            console.log(sliceZ);
+        }
+        
+    }
+
+
+    // calculate the X and Y dimensions..
+    function calculateDim(v){
+
+        // pixel size
+        var pixelSize ;
+        // if pixel is square
+        if(v.H[0] == v.H[1]){
+            pixelSize = v.H[0];
+            console.log('pixelSize' , pixelSize);
+        } else{
+            console.log('pixel is not square');
+        }
+        // arraySize
+        var arraySize;
+        // if array is square
+        if(v.aa[0] == v.aa[1]){
+            arraySize = v.aa[0];
+            console.log('arraySize' , arraySize);
+        } else{
+            console.log('array is not square');
+        }
+
+        // dim
+        XY = pixelSize*arraySize;
+        console.log('XY' , XY);
+
+        return XY;
+
+    }
+
+
+
+    if (window.File && window.FileReader && window.FileList && window.Blob) {
+      console.log("file api is supported");
+    } else {
+      alert('The File APIs are not fully supported in this browser.');
+    }
+
+
+
+    // Setup the dnd listeners.
+    // CONTAINER 1
+    container1.addEventListener('dragover', handleDragOver, false);
+    container1.addEventListener('drop', handleFileSelect1, false);
+
+
+
+    // BOTH
+
+    function handleDragOver(evt) {
+        evt.stopPropagation();
+        evt.preventDefault();
+        evt.dataTransfer.dropEffect = 'copy'; // Explicitly show this is a copy.
+    }
+
+    // CONTAINER 1
+
+
+    function updateProgress(evt){
+        if(evt.lengthComputable){
+            var value = evt.loaded / evt.total;
+            NProgress.set(value);
+            console.log(value);
+        }
+    }
+
+
+    function handleFileSelect1(evt) {
+
+        
+
+        //CHANGE PROGRESS BAR
+        NProgress.configure({ parent: '#container1' });
+        NProgress.start();
+
+        evt.stopPropagation();
+        evt.preventDefault();
+
+        var myFiles = evt.dataTransfer.files; // FileList object.
+
+        // remove drop sign
+        document.getElementById('text1').innerHTML = escape(myFiles[0].name);
+
+        
+        for (var  i = 0 ; i < myFiles.length ; i++){
+
+            var reader = new FileReader();
+        
+            reader.readAsDataURL(myFiles[i]);
+
+            reader.onprogress = updateProgress;
+
+            reader.onload = function(e) {
+                // get file content
+                dataURLArray.push( e.target.result)
+                // 
+                check(dataURLArray);                
+
+            }
+
+
+
+        }
+
+
+        function check(dataURLArray){
+            if (dataURLArray.length == myFiles.length){
+                v.file = dataURLArray;
+                initiateX();
+            }
+        }
+
+
+        
+
+        // LIST NAME
+
+        
+
+
+    }
+
+
+
+    function updateProgress(evt){
+        if(evt.lengthComputable){
+            var value = evt.loaded / evt.total;
+            NProgress.set(value);
+            console.log(value);
+        }
+    }
+
+
+// END OF WINDOW.ONLOAD
+}
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
 // //
 // // VARIABLES
 // // 
@@ -47,221 +263,6 @@
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-
-//
-// XTK
-//
-
-
-
-
-window.onload = function() {
-
-    // VARIABLES
-    var v;
-    var dataURLArray = [];
-    var sliceZ;
-    var URL = window.URL || window.webkitURL;
-    var XY;
-
-
-
-
-
-    // create a new test_renderer
-    sliceZ = new X.renderer2D();
-    sliceZ.container = 'container1';
-    sliceZ.orientation = 'Z';
-    sliceZ.init();
-
-    // r.camera.position = [0, 300, 0];
-
-    // we create the X.volume container and attach all DICOM files
-    v = new X.volume();
-    // map the data url to each of the slices
-    // v.file = 'https://mecano-eq.s3.amazonaws.com/IM-0008-0282-0001.dcm' 
-    // http://x.babymri.org/?vol.nrrd
-    // https://mecano-eq.s3.amazonaws.com/2901.nrrd
-    // initiateX();
-
-
-    function initiateX(){
-
-        
-
-        // add the volume
-        sliceZ.add(v);
-
-        // .. and render it
-        sliceZ.render();
-
-        // r.onShowtime = function() {
-
-        // // activate volume rendering
-        // v.volumeRendering = true;
-        // v.lowerThreshold = 0;
-        // v.windowLower = 0;
-        // v.windowHigh = 1000;
-        // v.minColor = [0, 0.06666666666666667, 1];
-        // v.maxColor = [0.5843137254901961, 1, 0];
-        // v.opacity = 0.9;
-
-        // };
-
-        // volume = v;
-
-        sliceZ.onShowtime = function(){
-
-            calculateDim(v);
-
-
-        }
-
-        
-    }
-
-
-    // calculate the X and Y dimensions..
-    function calculateDim(v){
-
-        // pixel size
-        var pixelSize ;
-        // if pixel is square
-        if(v.H[0] == v.H[1]){
-            pixelSize = v.H[0];
-            console.log('pixelSize' , pixelSize);
-        } else{
-            console.log('pixel is not square');
-        }
-        // arraySize
-        var arraySize;
-        // if array is square
-        if(v.aa[0] == v.aa[1]){
-            arraySize = v.aa[0];
-            console.log('arraySize' , arraySize);
-        } else{
-            console.log('array is not square');
-        }
-
-        // dim
-        XY = pixelSize*arraySize;
-        console.log('dim' , XY);
-
-        return XY;
-
-    }
-
-
-
-    if (window.File && window.FileReader && window.FileList && window.Blob) {
-      console.log("file api is supported");
-    } else {
-      alert('The File APIs are not fully supported in this browser.');
-    }
-
-
-
-    // Setup the dnd listeners.
-    // CONTAINER 1
-    container1.addEventListener('dragover', handleDragOver, false);
-    container1.addEventListener('drop', handleFileSelect1, false);
-
-
-
-    // BOTH
-
-    function handleDragOver(evt) {
-        evt.stopPropagation();
-        evt.preventDefault();
-        evt.dataTransfer.dropEffect = 'copy'; // Explicitly show this is a copy.
-    }
-
-    // CONTAINER 1
-
-
-    function updateProgress(evt){
-        if(evt.lengthComputable){
-            var value = evt.loaded / evt.total;
-            NProgress.set(value);
-            console.log(value);
-        }
-    }
-
-
-    function handleFileSelect1(evt) {
-
-        //CHANGE PROGRESS BAR
-        NProgress.configure({ parent: '#container1' });
-        NProgress.start();
-
-        evt.stopPropagation();
-        evt.preventDefault();
-
-        var myFiles = evt.dataTransfer.files; // FileList object.
-
-        
-        for (var  i = 0 ; i < myFiles.length ; i++){
-
-            var reader = new FileReader();
-        
-            reader.readAsDataURL(myFiles[i]);
-
-            reader.onprogress = updateProgress;
-
-            reader.onload = function(e) {
-                // get file content
-                dataURLArray.push( e.target.result)
-                // 
-                check(dataURLArray);                
-
-            }
-
-
-
-        }
-
-
-        function check(dataURLArray){
-            if (dataURLArray.length == myFiles.length){
-                v.file = dataURLArray;
-                initiateX();
-            }
-        }
-
-
-        
-
-        // LIST NAME
-
-        document.getElementById('text1').innerHTML = escape(myFiles[0].name);
-
-
-    }
-
-
-
-    function updateProgress(evt){
-        if(evt.lengthComputable){
-            var value = evt.loaded / evt.total;
-            NProgress.set(value);
-            console.log(value);
-        }
-    }
-
-
-// END OF WINDOW.ONLOAD
-}
-
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-
-
 
 
 

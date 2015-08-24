@@ -1,7 +1,13 @@
 //
+// VAR
+//
+var width,height,dim;
+var fidPointList = [];
+
+
+//
 // double click on container1
 //
-
 var container1counter = 1;
 container1.ondblclick=function(event){
    
@@ -18,14 +24,119 @@ container1.ondblclick=function(event){
 
 function doubleclick(event){
 
-    var myBool = true;
-
-    // update the mouse variable
+    var myBool = false;
+    // get clicks as is on container1
     var mouseX = event.clientX - $('#container1') .offset().left  ;
     var mouseY = event.clientY - $('#container1') .offset().top  ;
 
-    console.log( mouseX, mouseY );
+    //
+    // CHECK IF CLICK IS WITHIN DICOM (SET BOOL)
+    //
     
+    // if dicom is filling width (mouseX is all ok, check mouseY)
+    // **********
+    // *        *
+    // **********
+    // **  X   **
+    // **  X   **
+    // **********
+    // *        *
+    // **********
+    if(dim == width){
+        var diff = height - dim;
+        //
+        if( diff/2 < mouseY && mouseY < ( height - diff/2 )  ){
+            myBool = true;
+            // update the mouse variable
+            mouseY = event.clientY - $('#container1') .offset().top - diff/2 ;
+            // now mouseX and mouseY are adjusted as per the dicom
+            // they need to be remaped according to the XY
+            var outputX = ((XY - 0) / (dim - 0)) * (mouseX - 0);
+            var outputY = ((XY - 0) / (dim - 0)) * (mouseY - 0);
+            var P = new fidPoint(outputX,outputY,1);
+            console.log(P.X,P.Y);
+            fidPointList.push(P);
+        }
+        
+    }
+
+    // if dicom is filling height (mouseY is all ok, check mouseX)
+    // ******************
+    // *   *********    *
+    // *   *   X   *    *
+    // *   *   X   *    *   
+    // *   *   X   *    *
+    // *   *   X   *    *
+    // *   *********    *
+    // ******************
+    if(dim == height){
+        var diff = width - dim;
+        //
+        if( diff/2 < mouseX && mouseX < ( width - diff/2 )  ){
+            myBool = true;
+            // update the mouse variable
+            mouseX = event.clientX - $('#container1') .offset().left - diff/2 ;
+            // now mouseX and mouseY are adjusted as per the dicom
+            // they need to be remaped according to the XY
+            var outputX = ((XY - 0) / (dim - 0)) * (mouseX - 0);
+            var outputY = ((XY - 0) / (dim - 0)) * (mouseY - 0);
+            var P = new fidPoint(outputX,outputY,1);
+            console.log(P.X,P.Y);
+            fidPointList.push(P);
+        }
+        
+    }
+
+    return myBool;
+
+};
+
+
+
+//
+// If no resize, on init
+//
+width=$("#container1").width();
+height=$("#container1").height();
+if(width>height){
+    dim = height;
+} else {
+    dim = width;
+}
+
+//
+// on resize, get dims of container 1
+//
+
+// RESIZE
+$(window).resize(function () {
+    width=$("#container1").width();
+    height=$("#container1").height();
+    if(width>height){
+        dim = height;
+    } else {
+        dim = width;
+    }
+});
+
+
+//
+// point class
+//
+
+function fidPoint(X,Y,Z){
+    this.X = X;
+    this.Y = Y;
+    this.Z = Z;
+}
+
+//////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////// TRASH
+
+
+
+
+
     // // find intersections
 
     // // create a Ray with origin at the mouse position
@@ -56,9 +167,3 @@ function doubleclick(event){
     // }
 
     // checkProgress();
-
-    return myBool;
-
-};
-
-
