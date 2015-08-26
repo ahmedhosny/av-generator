@@ -53,8 +53,8 @@ function doubleclick(event){
             // they need to be remaped according to the XY
             var outputX = ((XY - 0) / (dim - 0)) * (mouseX - 0);
             var outputY = ((XY - 0) / (dim - 0)) * (mouseY - 0);
-            var P = new fidPoint(outputX,outputY,1);
-            console.log(P.X,P.Y);
+            var P = new fidPoint(outputX,outputY,parseFloat(currentSliceLoc) );
+            console.log(P.X,P.Y,P.Z);
             fidPointList.push(P);
         }
         
@@ -80,8 +80,8 @@ function doubleclick(event){
             // they need to be remaped according to the XY
             var outputX = ((XY - 0) / (dim - 0)) * (mouseX - 0);
             var outputY = ((XY - 0) / (dim - 0)) * (mouseY - 0);
-            var P = new fidPoint(outputX,outputY,1);
-            console.log(P.X,P.Y);
+            var P = new fidPoint(outputX,outputY,parseFloat(currentSliceLoc) );
+            console.log(P.X,P.Y,P.Z);
             fidPointList.push(P);
         }
         
