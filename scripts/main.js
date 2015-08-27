@@ -1,10 +1,13 @@
 //
 // VAR
 //
-var XY; // This is the real dimension of the dicom in mm
+var dicomX; // This is the real dimension of the dicom in mm
+var dicomY; // This is the real dimension of the dicom in mm
 var currentSliceLoc;
+var currentSliceIndex;
 var sliceLocList = [];
 var _data;
+var startX, startY;
 //
 // XTK
 //
@@ -48,6 +51,7 @@ window.onload = function() {
         sliceZ.render();
 
         console.log("rendered");
+        console.log(v);
 
 
         // r.onShowtime = function() {
@@ -84,6 +88,8 @@ window.onload = function() {
 
             // this will check if v.IndexZ has 0.5 in it, then it will set the value of currentSliceLoc
             checkDecimal();
+            // this will coordinate the circles
+            coordinateCircle(currentSliceIndex)
         }
         
     }
@@ -94,13 +100,9 @@ window.onload = function() {
     function calculateDim(v){
 
         // pixel size
-        var pixelSize ;
-        // if pixel is square
-        if(v.H[0] == v.H[1]){
-            pixelSize = v.H[0];
-        } else{
-            console.log('pixel is not square');
-        }
+        var pixelSizeX = v.H[0];
+        var pixelSizeY = v.H[1];
+
         // arraySize
         var arraySize;
         // if array is square
@@ -111,9 +113,11 @@ window.onload = function() {
         }
 
         // dim
-        XY = pixelSize*arraySize;
+        dicomX = pixelSizeX*arraySize;
+        dicomY = pixelSizeY*arraySize;
 
-        return XY;
+        console.log("this dicom is " , dicomX , " by " , dicomY , " in real dims.") ;
+
 
     }
 
@@ -176,7 +180,7 @@ window.onload = function() {
             readDCM(i,myFiles);
 
             //2// this gets sliceLoc info
-            parseDCM(myFiles[i]); 
+            parseDCM(myFiles[i], i); 
             
         }
 
@@ -297,7 +301,7 @@ window.onload = function() {
     // this function will load the dicom set to get the slice Loc
     //
 
-    function parseDCM(file){
+    function parseDCM(file , i){
 
         var reader = new FileReader();
         reader.onload = function(file) {
@@ -314,10 +318,51 @@ window.onload = function() {
                     console.log("error in dicomParser 1")
                 }
                 else
-                {
+                {   
+                    // get image patient position
                     var myString = String( dataSet.string('x00200032') );
-                    var sliceZ = myString.split(new RegExp(/\\/g))[2];
-                    sliceLocList.push(sliceZ);                    
+                    if(myString === undefined){
+                        alert("x00200032 - image position info does not exist")
+                    }
+                    else{
+                        var sliceZ = myString.split(new RegExp(/\\/g))[2];
+                        sliceLocList.push(sliceZ); 
+                    }
+
+                    // only for the first file
+                    if (i == 0){
+
+                        // get URI encoding
+                        var myString2 = String( dataSet.string('x00020010'))   
+                        if (myString2 != '1.2.840.10008.1.2.1'){
+                            alert('x00020010 - XTK does not support dicoms with bigEndian encoding. ' + String(myString2) + " found.")
+                            
+                        }   
+
+
+                        // CHECK IF AXIS ARE ALIGNED 
+                        var myString1 = String( dataSet.string('x00200037') );
+                        var orient = myString1.split(new RegExp(/\\/g));
+                        console.log('myString1' , myString1);
+                        // IF THEY ARE ALIGNED
+                        if (myString1 === undefined){
+                            alert("x00200037 - orientation info does not exist")
+                        } 
+                        else if ( parseFloat(orient[0]) == 1.0 && parseFloat(orient[1]) == 0.0 && parseFloat(orient[2]) == 0.0 &&
+                                  parseFloat(orient[3]) == 0.0 && parseFloat(orient[4]) == 1.0 && parseFloat(orient[5]) == 0.0 ) {
+                            // from image position (first one on top)
+                            startX = parseFloat( myString.split(new RegExp(/\\/g))[0] );
+                            startY = parseFloat( myString.split(new RegExp(/\\/g))[1] );
+                            console.log("this dicom starting point is at " , startX , startY) ;
+                        }
+                        else{
+                             alert('axes are not aligned with view. ' + String (myString1) + " found.")
+                        }
+
+                                    
+                    }
+                    // 
+                   
                 }
 
             }
@@ -338,7 +383,6 @@ window.onload = function() {
     //
 
     function checkDecimal(){
-        var currentSliceIndex;
         // it has 0.5
         if (v.indexZ % 1 != 0) { 
             currentSliceIndex = v.indexZ - 0.5;
@@ -464,108 +508,6 @@ window.onload = function() {
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-
-// //
-// // VARIABLES
-// // 
-// var myScene1,
-// myCamera1,
-// myRenderer1,
-// myMaterial1,
-// controls1,
-// myMesh1,
-// binary1;
-// //
-
-
-// //
-// var fov =30;
-// NProgress.configure({ showSpinner: false });
-
-
-//
-//
-//
-// var container1 = document.getElementById("container1");
-
-
-
-
-//
-// INITIATE THREEJS
-//
-// initiateScene1();
-
-
-
-
-//
-// RENDER FUNC
-//
-// function render(){
-//         myRenderer1.render(myScene1,myCamera1);
-//         controls1.update();
-//         requestAnimationFrame(render);
-// }
-
-
-
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-
-
-
-// //
-// // PREVENT FILES BEING DOWNLOADED
-// //
-// window.addEventListener("dragover",function(e){
-//   e = e || event;
-//   e.preventDefault();
-// },false);
-// window.addEventListener("drop",function(e){
-//   e = e || event;
-//   e.preventDefault();
-// },false);
-
-// //
-// // CREATE SCENE 1
-// //
-// function initiateScene1(){
-
-//     // SCENE
-//     myScene1 = new THREE.Scene();
-//     // CAMERA
-//     myCamera1 = new THREE.PerspectiveCamera(fov,window.innerWidth / window.innerHeight,1,10000);
-//     // RENDER
-//     myRenderer1 = new THREE.WebGLRenderer();
-//     // DUMMY POSITION
-//     myCamera1.target = new THREE.Vector3(0,0,0);
-//     myCamera1.position.set(-8.0, -30, 9);
-//     myScene1.add(myCamera1);
-//     // MATERIAL
-//     myMaterial1 = new THREE.MeshBasicMaterial({color: 0x867970 //wireframe: true
-//     });
-//     // LIGHT
-//     var light = new THREE.AmbientLight( 0xFFFFFF); // soft white light
-//     myScene1.add( light );
-//     // CONTROL
-//     controls1 = new THREE.TrackballControls( myCamera1, container1);
-//     controls1.rotateSpeed = 1.0;
-//     controls1.zoomSpeed = 1.2;
-//     controls1.panSpeed = 0.8;
-//     controls1.noZoom = false;
-//     controls1.noPan = false;
-//     controls1.staticMoving = false;
-//     controls1.dynamicDampingFactor = 0.15;
-//     controls1.keys = [ 65, 83, 68 ];
-
-// }
 
 
 
