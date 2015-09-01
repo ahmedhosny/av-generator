@@ -49,6 +49,13 @@ $('#tempThree').click( function(){
     //4// draw top curves for the first time
     drawTopCurves();
 
+    //5// project p0 onto bottom plane
+    projectPointOntoPlane(tempFidPointList[0] , tempFidPointList[4] , tempFidPointList[5] ,tempFidPointList[6] , myScene1 )
+
+    //TEST//
+    
+
+
     makeGUI();
 
     render();
@@ -64,7 +71,6 @@ var myScene1,
 myCamera1,
 myRenderer1,
 controls1;
-var topCurveIdList = [];
 
 //
 // var for GUI  ///////////////////////////////////////
@@ -181,134 +187,6 @@ function adjustView(){
     myCamera1.updateProjectionMatrix();
     // FIX CONTROLS P0
     controls1.target.set( tempFidPointList[0].X , tempFidPointList[0].Y , tempFidPointList[0].Z );
-}
-
-//
-// NOW WE START THE PARAMETRIC WORK
-//
-// get the top three midpoints
-function getTopMidPoint(){
-    // get the upper plane normal
-    var nor = getNormal(P1,P2,P3)
-    //
-    for(var i = 1 ; i < 4 ; i++){
-        // get the point where it should be
-        var Ptemp = getMidpoint(tempFidPointList[0],tempFidPointList[i]);
-        sphereListOriginal.push(Ptemp);
-        // make a sphere where it should be
-        var sphere = addSphere('b',Ptemp);
-        sphereList.push(sphere);
-        
-    }
-
-}
-
-//
-// now we move the midpoints along the normal to the top vector
-//
-function moveSphere(sphere, index, dir,dist){
-    sphere.position.x = sphereListOriginal[index].X + dir.x * dist;
-    sphere.position.y = sphereListOriginal[index].Y + dir.y * dist;
-    sphere.position.z = sphereListOriginal[index].Z + dir.z * dist; 
-}
-
-//
-// get normal to three points
-//
-function getNormal(P1,P2,P3){
-    // Dir = (B - A) x (C - A)
-    var Vec1 = new THREE.Vector3(P2.X-P1.X , P2.Y-P1.Y , P2.Z-P1.Z);
-    var Vec2 = new THREE.Vector3(P3.X-P1.X , P3.Y-P1.Y , P3.Z-P1.Z);
-    var c = new THREE.Vector3();
-    c.crossVectors( Vec1 , Vec2 ).normalize();
-    return c;
-}
-
-//
-// this function will create the gui and add the variables from the var to it
-//
-function makeGUI(){
-
-    var gui = new dat.GUI({
-        height : 5 * 32 - 1
-    });
-    var guiFolder1 = gui.addFolder('overall controls');
-
-    var topPlaneNormal = getNormal(P1,P2,P3);
-    guiFolder1.add(overall, 'midpointLoc' , -5.1 , 0.0 ).onChange( function(){
-        // change all three midpoints
-        moveSphere(sphereList[7],7,topPlaneNormal,overall.midpointLoc);
-        moveSphere(sphereList[8],8,topPlaneNormal,overall.midpointLoc);
-        moveSphere(sphereList[9],9,topPlaneNormal,overall.midpointLoc);
-        // remove the old curves
-        myScene1.remove(myScene1.getObjectById( topCurveIdList[0]) )
-        // empty the list
-        topCurveIdList = [];
-        // draw the top curves again
-        drawTopCurves();
-
-    } );
-
-    guiFolder1.open();
-
-}
-
-//
-// this function will draw the top three curves connecting P0-P1 , P0-P2 , P0-P3 going through the midpoints.
-//
-function drawTopCurves(){
-
-    // NURBS curve
-
-    var nurbsControlPoints = [];
-    var nurbsKnots = [];
-    var nurbsDegree = 2;
-
-    for ( var i = 0; i <= nurbsDegree; i ++ ) {
-
-        nurbsKnots.push( 0 );
-
-    }
-
-    // for ( var i = 0, j = 20; i < j; i ++ ) {
-
-    nurbsControlPoints.push( new THREE.Vector4 (sphereList[0].position.x , sphereList[0].position.y , sphereList[0].position.z , 1 ) );
-    var knot = ( 0 + 1 ) / ( 3 - nurbsDegree );
-    nurbsKnots.push( THREE.Math.clamp( knot, 0, 1 ) );
-
-
-    nurbsControlPoints.push( new THREE.Vector4 (sphereList[7].position.x , sphereList[7].position.y , sphereList[7].position.z , 1 ) );
-    var knot = ( 1 + 1 ) / ( 3 - nurbsDegree );
-    nurbsKnots.push( THREE.Math.clamp( knot, 0, 1 ) );
-
-    nurbsControlPoints.push( new THREE.Vector4 (sphereList[1].position.x , sphereList[1].position.y , sphereList[1].position.z , 1 ) );
-    var knot = ( 2 + 1 ) / ( 3 - nurbsDegree );
-    nurbsKnots.push( THREE.Math.clamp( knot, 0, 1 ) );
-
-
-    // }
-
-    var nurbsCurve = new THREE.NURBSCurve(nurbsDegree, nurbsKnots, nurbsControlPoints);
-
-    var nurbsGeometry = new THREE.Geometry();
-    nurbsGeometry.vertices = nurbsCurve.getPoints(200);
-    var nurbsMaterial = new THREE.LineBasicMaterial( { linewidth: 10, color: 0x333333, transparent: true } );
-
-    var nurbsLine = new THREE.Line( nurbsGeometry, nurbsMaterial );
-
-    // nurbsLine.position.set( 200, -100, 0 );
-    myScene1.add( nurbsLine );
-
-    topCurveIdList.push(nurbsLine.id)
-
-    // var nurbsControlPointsGeometry = new THREE.Geometry();
-    // nurbsControlPointsGeometry.vertices = nurbsCurve.controlPoints;
-    // var nurbsControlPointsMaterial = new THREE.LineBasicMaterial( { linewidth: 2, color: 0x333333, opacity: 0.25, transparent: true } );
-    // var nurbsControlPointsLine = new THREE.Line( nurbsControlPointsGeometry, nurbsControlPointsMaterial );
-    // nurbsControlPointsLine.position.copy( nurbsLine.position );
-    // myScene1.add( nurbsControlPointsLine );
-
-
 }
 
 
