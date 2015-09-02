@@ -1,3 +1,7 @@
+// Thie file reads the nrrd file on drag and drop
+//
+
+
 //
 // VAR
 //

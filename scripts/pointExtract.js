@@ -1,3 +1,8 @@
+// This file handles double clicking on the dicom. It stores the points in 
+// the fidPointList and controls the snap library for displaying the circles and numbers.
+
+
+
 //
 // VAR
 //
@@ -55,8 +60,8 @@ function doubleclick(event , container1counter){
             var outputX = ((dicomX - 0) / (dim - 0)) * (mouseX - 0);
             var outputY = ((dicomY - 0) / (dim - 0)) * (mouseYnew - 0);
             // add the startong points at the top letf voxel
-            var P = new fidPoint(startX + outputX, startY + outputY,parseFloat(currentSliceLoc) );
-            console.log(P.X,P.Y,P.Z);
+            var P = new THREE.Vector3(startX + outputX, startY + outputY,parseFloat(currentSliceLoc) );
+            console.log(P.x,P.y,P.z);
             fidPointList.push(P);
             // visualize
             addCircle(mouseX , mouseY , container1counter , true );
@@ -84,8 +89,8 @@ function doubleclick(event , container1counter){
             // they need to be remaped according to the dicomXY
             var outputX = ((dicomX - 0) / (dim - 0)) * (mouseXnew - 0);
             var outputY = ((dicomY - 0) / (dim - 0)) * (mouseY - 0);
-            var P = new fidPoint(startX + outputX, startY + outputY,parseFloat(currentSliceLoc) );
-            console.log(P.X,P.Y,P.Z);
+            var P = new THREE.Vector3(startX + outputX, startY + outputY,parseFloat(currentSliceLoc) );
+            console.log(P.x,P.y,P.z);
             fidPointList.push(P);
             // visualize
             addCircle(mouseX , mouseY , container1counter , true );
@@ -125,20 +130,6 @@ $(window).resize(function () {
     }
 });
 
-
-//
-// point class
-//
-
-function fidPoint(X,Y,Z){
-    this.X = parseFloat(X);
-    this.Y = parseFloat(Y);
-    this.Z = parseFloat(Z);
-}
-
-function getMidpoint(p1,p2){
-    return new fidPoint( (p1.X+p2.X)/2 , (p1.Y+p2.Y)/2 , (p1.Z+p2.Z)/2 );   
-}
 
 
 //
