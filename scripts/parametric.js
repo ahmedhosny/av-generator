@@ -406,18 +406,18 @@ function drawSurface(){
     var nsControlPoints = [
                     [
                         new THREE.Vector4 ( sphereList[0].position.x , sphereList[0].position.y , sphereList[0].position.z,  1 ),
-                        new THREE.Vector4 ( sphereList[7].position.x , sphereList[7].position.y , sphereList[7].position.z , 1 ),
+                        new THREE.Vector4 ( sphereList[7].position.x , sphereList[7].position.y , sphereList[7].position.z , 1),
                         new THREE.Vector4 ( sphereList[1].position.x , sphereList[1].position.y , sphereList[1].position.z , 1 )
                     ],
-                    [
-                        new THREE.Vector4 ( sphereList[0].position.x , sphereList[0].position.y , sphereList[0].position.z,  1 ),
-                        new THREE.Vector4 ( sphereList[14].position.x , sphereList[14].position.y , sphereList[14].position.z , 1 ),
-                        new THREE.Vector4 ( sphereList[16].position.x , sphereList[16].position.y , sphereList[16].position.z , 1 )
-                    ],
+                    // [
+                    //     new THREE.Vector4 ( sphereList[0].position.x , sphereList[0].position.y , sphereList[0].position.z,  1 ),
+                    //     new THREE.Vector4 ( sphereList[14].position.x , sphereList[14].position.y , sphereList[14].position.z , 1 ),
+                    //     new THREE.Vector4 ( sphereList[16].position.x , sphereList[16].position.y , sphereList[16].position.z , 1 )
+                    // ],
                     [
                         new THREE.Vector4 ( sphereList[0].position.x , sphereList[0].position.y , sphereList[0].position.z,  1 ),
                         new THREE.Vector4 ( sphereList[12].position.x , sphereList[12].position.y , sphereList[12].position.z,  1 ),
-                        new THREE.Vector4 ( sphereList[4].position.x , sphereList[4].position.y , sphereList[4].position.z, 1  )
+                        new THREE.Vector4 ( sphereList[4].position.x , sphereList[4].position.y , sphereList[4].position.z, 1 )
                     ],
                     [
                         new THREE.Vector4 ( sphereList[0].position.x , sphereList[0].position.y , sphereList[0].position.z,  1  ),
@@ -425,11 +425,16 @@ function drawSurface(){
                         new THREE.Vector4 ( sphereList[2].position.x , sphereList[2].position.y , sphereList[2].position.z,  1   )
                     ]
                 ];
-                var degree1 = 3;
+                // degree is (#pts-1)
+                // quadratic 2, cubic 3
+                var degree1 = 2;
                 var degree2 = 2;
                 // The number of knots is always equal to the number of control points plus curve degree plus one 
                 // (i.e. number of control points plus curve order)
-                var knots1 = [0, 0, 0, 0, 1, 1, 1, 1 ];
+                //  When multiplicity is equal to the degree of used curves, there is a sharp edge
+                // var knots1 = [0, 0, 0, 0, 1, 1, 1, 1 ];
+                // var knots2 = [0, 0, 0, 0, 1, 1, 1, 1 ];
+                var knots1 = [0, 0, 0, 1, 1, 1 ];
                 var knots2 = [0, 0, 0,  1, 1, 1 ];
                 var nurbsSurface = new THREE.NURBSSurface(degree1, degree2, knots1, knots2, nsControlPoints);
 
@@ -441,11 +446,29 @@ function drawSurface(){
                     return nurbsSurface.getPoint(u, v);
                 };
 
-                var geometry = new THREE.ParametricGeometry( getSurfacePoint, 20, 20 );
+                var geometry = new THREE.ParametricGeometry( getSurfacePoint, 50, 50 );
                 var material = new THREE.MeshLambertMaterial( { map: map , side: THREE.DoubleSide } ); // 
                 var object = new THREE.Mesh( geometry, material );
                 object.name = 'cusp1';
                 myScene1.add(object);
+
+                // //////
+                // //Create a closed bent a sine-like wave
+                // var curve = new THREE.SplineCurve3( [
+                //         new THREE.Vector3 ( sphereList[0].position.x , sphereList[0].position.y , sphereList[0].position.z ),
+                //         new THREE.Vector3 ( sphereList[12].position.x , sphereList[12].position.y , sphereList[12].position.z ),
+                //         new THREE.Vector3 ( sphereList[4].position.x , sphereList[4].position.y , sphereList[4].position.z  )
+                // ] );
+
+                // var geometry = new THREE.Geometry();
+                // geometry.vertices = curve.getPoints( 50 );
+
+                // var material = new THREE.LineBasicMaterial( { color : 0xff0000 } );
+
+                // //Create the final Object3d to add to the scene
+                // var splineObject = new THREE.Line( geometry, material );
+                // myScene1.add(splineObject);
+                // //////
 
 }
 
