@@ -1,129 +1,64 @@
-// Thie file reads the nrrd file on drag and drop
-//
+// 02_ main UI - load  files
+
+// container1 - container2 - container3
+//   no three -   three1 -     three2
+
+// container4
+// three3
 
 
+
 //
-// VAR
+// global VAR
 //
-var dicomX; // This is the real dimension of the dicom in mm
-var dicomY; // This is the real dimension of the dicom in mm
-var currentSliceLoc;
-var currentSliceIndex;
-var sliceLocList = [];
-var _data;
-var startX, startY;
+var tempFidPointList = [];
+var topPlaneNormal;
+var vectorListTop;
+var vectorListBottom;
+var P0;
+var P1;
+var P2;
+var P3;
+var P4;
+var P5;
+var P6;
+
+var myCoorText;
+
 //
-// XTK
+var container1 = document.getElementById("container1");
+var container2 = document.getElementById("container2");
+var container3 = document.getElementById("container3");
+
+// LINES
+
+var myCuspList = ["L_cusp","NC_cusp","R_cusp"];
+// CUSP1 L
+var projectedP0_q1Top_L;
+var q1Bottom_q1Top_L;
+var projectedP0_copyP4;
+var projectedP0_q3Top_L;
+var q3Bottom_q3Top_L;
+var LCusp_Index = [ 21,7,1, 21,14,16,21,12,4,21,18,20,21,8,2 ];
+// CUSP2 NC
+var projectedP0_q1Top_NC;
+var q1Bottom_q1Top_NC;
+var projectedP0_copyP5;
+var projectedP0_q3Top_NC;
+var q3Bottom_q3Top_NC;
+var NCCusp_Index = [ 32,8,2, 32 ,25,27 , 32 , 23 ,5, 32 ,29,31,32,9,3 ];
+// CUSP3
+var projectedP0_q1Top_R;
+var q1Bottom_q1Top_R;
+var projectedP0_copyP6;
+var projectedP0_q3Top_R;
+var q3Bottom_q3Top_R;
+var RCusp_Index = [ 43,9,3, 43 ,36,38 , 43, 34 ,6, 43 ,40,42,43,7,1 ];
 //
+var ALLCusp_Index = [ LCusp_Index , NCCusp_Index , RCusp_Index ];
+
+
 window.onload = function() {
-
-    // VARIABLES
-    var v;
-    var dataURLArray = [];
-    var sliceZ;
-
-    _webgl_supported = true;
-    $(document.body).addClass('webgl_enabled');
-
-
-    // create a new test_renderer
-    sliceZ = new X.renderer2D();
-    sliceZ.container = 'container1';
-    sliceZ.orientation = 'Z';
-    sliceZ.init();
-
-    // r.camera.position = [0, 300, 0];
-
-    // we create the X.volume container and attach all DICOM files
-    v = new X.volume();
-    // map the data url to each of the slices
-    // v.file = 'https://mecano-eq.s3.amazonaws.com/IM-0008-0282-0001.dcm' 
-    // http://x.babymri.org/?vol.nrrd
-    // https://mecano-eq.s3.amazonaws.com/2901.nrrd
-    // initiateX();
-
-
-    function initiateX(){
-        console.log("begin initializing");
-
-        
-
-        // add the volume
-        sliceZ.add(v);
-
-        // .. and render it
-        sliceZ.render();
-
-        console.log("rendered");
-        console.log(v);
-
-
-        // r.onShowtime = function() {
-
-        // // activate volume rendering
-        // v.volumeRendering = true;
-        // v.lowerThreshold = 0;
-        // v.windowLower = 0;
-        // v.windowHigh = 1000;
-        // v.minColor = [0, 0.06666666666666667, 1];
-        // v.maxColor = [0.5843137254901961, 1, 0];
-        // v.opacity = 0.9;
-
-        // };
-
-        // volume = v;
-
-        sliceZ.onShowtime = function(){
-
-            calculateDim(v);
-            $("#container1").find("canvas").css('cursor' , 'crosshair');
-            document.getElementById('text1a').innerHTML = "Select the 7 points";
-            // this will check if v.IndexZ has 0.5 in it, then it will set the value of currentSliceLoc
-            // do it here in case user click right away without scrolling.
-            checkDecimal();
-
-
-        }
-
-        // 
-        // on scroll, update the current slice var
-        //
-        sliceZ.onScroll = function(){
-
-            // this will check if v.IndexZ has 0.5 in it, then it will set the value of currentSliceLoc
-            checkDecimal();
-            // this will coordinate the circles
-            coordinateCircle(currentSliceIndex)
-        }
-        
-    }
-
-    //
-    // calculate the X and Y dimensions..
-    //
-    function calculateDim(v){
-
-        // pixel size
-        var pixelSizeX = v.H[0];
-        var pixelSizeY = v.H[1];
-
-        // arraySize
-        var arraySize;
-        // if array is square
-        if(v.aa[0] == v.aa[1]){
-            arraySize = v.aa[0];
-        } else{
-            console.log('array is not square');
-        }
-
-        // dim
-        dicomX = pixelSizeX*arraySize;
-        dicomY = pixelSizeY*arraySize;
-
-        console.log("this dicom is " , dicomX , " by " , dicomY , " in real dims.") ;
-
-
-    }
 
 
 
@@ -133,26 +68,161 @@ window.onload = function() {
       alert('The File APIs are not fully supported in this browser.');
     }
 
+    //
+    // PREVENT FILES BEING DOWNLOADED
+    //
+    window.addEventListener("dragover",function(e){
+      e = e || event;
+      e.preventDefault();
+    },false);
+    window.addEventListener("drop",function(e){
+      e = e || event;
+      e.preventDefault();
+    },false);
 
 
-    // Setup the dnd listeners.
+
+    ////////////////
     // CONTAINER 1
+    ////////////////
     container1.addEventListener('dragover', handleDragOver, false);
     container1.addEventListener('drop', handleFileSelect1, false);
 
+    function handleFileSelect1(evt) {
 
-
-    // BOTH
-
-    function handleDragOver(evt) {
         evt.stopPropagation();
         evt.preventDefault();
-        evt.dataTransfer.dropEffect = 'copy'; // Explicitly show this is a copy.
+
+        var myFiles = evt.dataTransfer.files; // FileList object.
+        var reader = new FileReader();
+        reader.readAsText(myFiles[0]);
+
+        reader.onload = function(e) {
+            // get file content and make Vector3
+            getCoord(e.target.result) ;
+            myCoorText = e.target.result;
+            // clear the container
+            $('#container1').empty(); ////////////////////////////////////////////////////////////////////////////////
+            document.getElementById('container1').innerHTML = "<br><br><br>" + e.target.result;
+        }
+
+        // LIST NAME
+        document.getElementById('text1a').style.left = "-3px"; 
+        document.getElementById('text1a').style.backgroundColor = "white";     
+        document.getElementById('text1a').innerHTML = decodeURI( escape(myFiles[0].name) )  ;
+
     }
 
-    // CONTAINER 1
+    ////////////////
+    // CONTAINER 2
+    ////////////////
+
+    container2.addEventListener('dragover', handleDragOver, false);
+    container2.addEventListener('drop', handleFileSelect2, false);
 
 
+    function handleFileSelect2(evt) {
+
+        // remove the icon
+        //$('#con1Logo').remove();
+        $('#container2').empty(); /////////////////////////////////////////////////////////////////////////////////////
+
+        //CHANGE PROGRESS BAR
+        NProgress.configure({ parent: '#container2' });
+        NProgress.start();
+
+        evt.stopPropagation();
+        evt.preventDefault();
+
+        var myFiles = evt.dataTransfer.files; // FileList object.
+
+        var reader = new FileReader();
+        
+        reader.readAsDataURL(myFiles[0]);
+
+        reader.onprogress = updateProgress;
+
+        reader.onload = function(e) {
+            // get file content
+            binary1 = e.target.result;
+
+            if (firstStl1){
+                loadSTL(binary1, "container2");
+                console.log("sinus loaded"); 
+            }
+            else{
+                loadAnotherSTL(binary1, "container2");
+                console.log("another sinus loaded"); 
+            }
+
+
+        }
+
+        gotSTL();
+
+        // LIST NAME
+        // document.getElementById('text2a').style.left = "-3px"; 
+        // document.getElementById('text2a').style.backgroundColor = "white";     
+        // document.getElementById('text2a').innerHTML = decodeURI( escape(myFiles[0].name) )  ;
+
+    }
+
+    ////////////////
+    // CONTAINER 3
+    ////////////////
+
+    container3.addEventListener('dragover', handleDragOver, false);
+    container3.addEventListener('drop', handleFileSelect3, false);
+
+
+    function handleFileSelect3(evt) {
+
+        // remove the icon
+        //$('#con1Logo').remove();
+        $('#container3').empty(); /////////////////////////////////////////////////////////////////////////////////////
+
+        //CHANGE PROGRESS BAR
+        NProgress.configure({ parent: '#container3' });
+        NProgress.start();
+
+        evt.stopPropagation();
+        evt.preventDefault();
+
+        var myFiles = evt.dataTransfer.files; // FileList object.
+
+        var reader = new FileReader();
+        
+        reader.readAsDataURL(myFiles[0]);
+
+        reader.onprogress = updateProgress;
+
+        reader.onload = function(e) {
+            // get file content
+            binary2 = e.target.result;
+
+            if (firstStl2){
+                loadSTL(binary2, "container3");
+                console.log("calcium loaded"); 
+            }
+            else{
+                loadAnotherSTL(binary2, "container3");
+                console.log("another calcium loaded"); 
+            }
+
+
+        }
+
+        // LIST NAME
+        // document.getElementById('text2a').style.left = "-3px"; 
+        // document.getElementById('text2a').style.backgroundColor = "white";     
+        // document.getElementById('text2a').innerHTML = decodeURI( escape(myFiles[0].name) )  ;
+
+    }
+
+
+    //
+    // works for container2 and container3
+    //
     function updateProgress(evt){
         if(evt.lengthComputable){
             var value = evt.loaded / evt.total;
@@ -161,425 +231,71 @@ window.onload = function() {
         }
     }
 
-
-    function handleFileSelect1(evt) {
-
-        
-
-        //CHANGE PROGRESS BAR
-        NProgress.configure({ parent: '#container1' });
-        NProgress.start();
-
+    function handleDragOver(evt) {
         evt.stopPropagation();
         evt.preventDefault();
-
-        var myFiles = evt.dataTransfer.files; // FileList object.
-
-        createData();
-        
-        
-        for (var  i = 0 ; i < myFiles.length ; i++){
-
-            //1// this load into [file]
-            readDCM(i,myFiles);
-
-            //2// this gets sliceLoc info
-            parseDCM(myFiles[i], i); 
-            
-        }
-
-
-
-        for (var  j = 0 ; j < _data['volume']['file'].length ; j ++){
-
-            var reader = new FileReader();
-
-            // reader.onerror = errorHandler;
-            reader.onload = (loadFileData)( _data['volume']['file'][j] , j ); // bind the current type
- 
-            // start reading this file
-            reader.readAsArrayBuffer( _data['volume']['file'][j] );
-
-
-        }
-
-
-    }
-
-
-
-    function updateProgress(evt){
-        if(evt.lengthComputable){
-            var value = evt.loaded / evt.total;
-            NProgress.set(value);
-            // console.log(value);
-        }
-    }
-
-
-
-
-    //
-    // this function will read the dicom into into the volume['file']
-    //
-    function readDCM(i,myFiles){
-
-        var f = myFiles[i];
-        var _fileName = f.name;
-        var _fileExtension = _fileName.split('.').pop().toUpperCase();
-
-
-        // check for files with no extension
-        if (_fileExtension == _fileName.toUpperCase()) {
-            // this must be dicom
-             _fileExtension = 'DCM';
-        }
-
-
-        if (_data['volume']['extensions'].indexOf(_fileExtension) >= 0) {
-            _data['volume']['file'].push(f);
-        } 
-        else {
-            console.log("file loaded is not a volume file")
-        } 
-
-        console.log("file " + String(i) + " of " + String (myFiles.length) + " done.")
-
-    
-        
-    }
-
-
-     // setup callback after reading
-    var loadFileData = function(file,j) {
-
-
-        return function(e) {
-
-            // reading complete
-            var data = e.target.result;
-
-            // might have multiple files associated
-            // attach the filedata to the right one
-            _data['volume']['filedata'][_data['volume']['file'].indexOf(file)] = data;
-
-            // check here
-            check(j);  
-
-        };
-    };
-
-
-
-
-
-    //
-    // this will check when all have been loaded into xtk - then it initializes.
-    //
-    function check(j){
-
-        if ( j  == ( _data['volume']['file'].length - 1 ) ){
-
-            NProgress.done();
-
-            console.log('New data', _data);
-
-            // fill up v
-            v.file = _data['volume']['file'].map(function(v) {
-                return v.name;
-            });
-
-            v.filedata = _data['volume']['filedata'];
-
-            v.onComputingProgress = function(value) {
-                console.log(value);
-            }
-
-            // 
-            initiateX();
-        }
-
-    }
-
-    //
-    // this function will load the dicom set to get the slice Loc
-    //
-
-    function parseDCM(file , i){
-
-        var reader = new FileReader();
-        reader.onload = function(file) {
-            var arrayBuffer = reader.result;
-            var byteArray = new Uint8Array(arrayBuffer);
-            var dataSet;
-            // Invoke the paresDicom function and get back a DataSet object with the contents
-            try {
-
-                dataSet = dicomParser.parseDicom(byteArray);
-
-                if(dataSet.warnings.length > 0)
-                {
-                    console.log("error in dicomParser 1")
-                }
-                else
-                {   
-                    // get image patient position
-                    var myString = String( dataSet.string('x00200032') );
-                    if(myString === undefined){
-                        alert("x00200032 - image position info does not exist")
-                    }
-                    else{
-                        var sliceZ = myString.split(new RegExp(/\\/g))[2];
-                        sliceLocList.push(sliceZ); 
-                    }
-
-                    // only for the first file
-                    if (i == 0){
-
-                        // get URI encoding
-                        var myString2 = String( dataSet.string('x00020010'))   
-                        if (myString2 != '1.2.840.10008.1.2.1'){
-                            alert('x00020010 - XTK does not support dicoms with bigEndian encoding. ' + String(myString2) + " found.")
-                            
-                        }   
-
-
-                        // CHECK IF AXIS ARE ALIGNED 
-                        var myString1 = String( dataSet.string('x00200037') );
-                        var orient = myString1.split(new RegExp(/\\/g));
-                        console.log('myString1' , myString1);
-                        // IF THEY ARE ALIGNED
-                        if (myString1 === undefined){
-                            alert("x00200037 - orientation info does not exist")
-                        } 
-                        else if ( parseFloat(orient[0]) == 1.0 && parseFloat(orient[1]) == 0.0 && parseFloat(orient[2]) == 0.0 &&
-                                  parseFloat(orient[3]) == 0.0 && parseFloat(orient[4]) == 1.0 && parseFloat(orient[5]) == 0.0 ) {
-                            // from image position (first one on top)
-                            startX = parseFloat( myString.split(new RegExp(/\\/g))[0] );
-                            startY = parseFloat( myString.split(new RegExp(/\\/g))[1] );
-                            console.log("this dicom starting point is at " , startX , startY) ;
-                        }
-                        else{
-                             alert('axes are not aligned with view. ' + String (myString1) + " found.")
-                        }
-
-                                    
-                    }
-                    // 
-                   
-                }
-
-            }
-            catch(err)
-            {
-                console.log(err)
-            }
-
-        }
-        reader.readAsArrayBuffer(file);
-
+        evt.dataTransfer.dropEffect = 'copy'; // Explicitly show this is a copy.
     }
 
 
 
     //
-    // This will check if the number of dicom files is off or even.
+    //
     //
 
-    function checkDecimal(){
-        // it has 0.5
-        if (v.indexZ % 1 != 0) { 
-            currentSliceIndex = v.indexZ - 0.5;
-            currentSliceLoc = sliceLocList[currentSliceIndex];
-            console.log(currentSliceIndex , currentSliceLoc);
-        }
-        //  it is ok
-        else{
-            currentSliceIndex = v.indexZ;
-            currentSliceLoc = sliceLocList[currentSliceIndex];
-            console.log(currentSliceIndex , currentSliceLoc);
-        }
-        // remove drop sign
-        document.getElementById('text1').innerHTML = "slice " + String(currentSliceIndex + 1 ) + " of " +  String(sliceLocList.length) ;
-        // escape(myFiles[0].name)
+
+    function getCoord(myString){
+
+        var multiX = -1;
+        var multiY = -1;
+        var multiZ = 1;
+
+        var rows = myString.split("\n");
+
+        P0 = new THREE.Vector3(  parseFloat( rows[0].split(',')[1] ) * multiX, parseFloat( rows[0].split(',')[2] ) * multiY, parseFloat( rows[0].split(',')[3] ) * multiZ );
+        tempFidPointList.push(P0);
+        P1 = new THREE.Vector3(  parseFloat( rows[1].split(',')[1] ) * multiX, parseFloat( rows[1].split(',')[2] ) * multiY, parseFloat( rows[1].split(',')[3] ) * multiZ );
+        tempFidPointList.push(P1);
+        P2 = new THREE.Vector3(  parseFloat( rows[2].split(',')[1] ) * multiX, parseFloat( rows[2].split(',')[2] ) * multiY, parseFloat( rows[2].split(',')[3] ) * multiZ );
+        tempFidPointList.push(P2);
+        P3 = new THREE.Vector3(  parseFloat( rows[3].split(',')[1] ) * multiX, parseFloat( rows[3].split(',')[2] ) * multiY, parseFloat( rows[3].split(',')[3] ) * multiZ );
+        tempFidPointList.push(P3);
+        P4 = new THREE.Vector3(  parseFloat( rows[4].split(',')[1] ) * multiX, parseFloat( rows[4].split(',')[2] ) * multiY, parseFloat( rows[4].split(',')[3] )* multiZ );
+        tempFidPointList.push(P4);
+        P5 = new THREE.Vector3(  parseFloat( rows[5].split(',')[1] ) * multiX, parseFloat( rows[5].split(',')[2] ) * multiY, parseFloat( rows[5].split(',')[3] ) * multiZ );
+        tempFidPointList.push(P5);
+        P6 = new THREE.Vector3(  parseFloat( rows[6].split(',')[1] ) * multiX, parseFloat( rows[6].split(',')[2] ) * multiY, parseFloat( rows[6].split(',')[3] ) * multiZ  );
+        tempFidPointList.push(P6);
+
+        //
+        // top plane
+        //
+        topPlaneNormal = getNormal(P1,P2,P3);
+        var P2Clone = P2.clone();
+        var topPlaneVectorX = P2Clone.sub(P1).normalize();
+        var P3Clone = P3.clone();
+        var topPlaneVectorY = P3Clone.sub(P1).normalize();
+        vectorListTop = [topPlaneVectorX,topPlaneVectorY,topPlaneNormal];
+
+        //
+        // bottom plane
+        //
+        var bottomPlaneNormal = getNormal(P4,P5,P6);
+        var P5Clone = P5.clone();
+        var bottomPlaneVectorX = P5Clone.sub(P4).normalize();
+        var P6Clone = P6.clone();
+        var bottomPlaneVectorY = P6Clone.sub(P4).normalize();
+        vectorListBottom = [bottomPlaneVectorX,bottomPlaneVectorY,bottomPlaneNormal];
+
+
+
     }
 
 
-    //
-    // XTK specific function
-    //
-    function createData() {
-
-        _data = {
-        'volume': {
-         'file': [],
-         'filedata': [],
-         'extensions': ['NRRD', 'MGZ', 'MGH', 'NII', 'GZ', 'DCM', 'DICOM']
-        },
-        'labelmap': {
-         'file': [],
-         'filedata': [],
-         'extensions': ['NRRD', 'MGZ', 'MGH']
-        },
-        'colortable': {
-         'file': [],
-         'filedata': [],
-         'extensions': ['TXT', 'LUT']
-        },
-        'mesh': {
-         'file': [],
-         'filedata': [],
-         'extensions': ['STL', 'VTK', 'FSM', 'SMOOTHWM', 'INFLATED', 'SPHERE',
-                        'PIAL', 'ORIG', 'OBJ']
-        },
-        'scalars': {
-         'file': [],
-         'filedata': [],
-         'extensions': ['CRV', 'LABEL']
-        },
-        'fibers': {
-         'file': [],
-         'filedata': [],
-         'extensions': ['TRK']
-        },
-        };
-
-    }
-
+  
 
 
 // END OF WINDOW.ONLOAD
 }
 
 
-
-
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-// function read(files) {
-
-  
-
-
-
-
-      // // we now have the following data structure for the scene
-      // 
-
-      // var _types = Object.keys(_data);
-
-      // // number of total files
-      // var _numberOfFiles = files.length;
-      // var _numberRead = 0;
-      // window.console.log('Total new files:', _numberOfFiles);
-
-      // //
-      // // the HTML5 File Reader callbacks
-      // //
-
-      // // setup callback for errors during reading
-      // var errorHandler = function(e) {
-
-      //  console.log('Error:' + e.target.error.code);
-
-      // };
-
-      // // setup callback after reading
-      // var loadHandler = function(type, file) {
-
-      //  return function(e) {
-
-      //    // reading complete
-      //    var data = e.target.result;
-
-      //    // might have multiple files associated
-      //    // attach the filedata to the right one
-      //    _data[type]['filedata'][_data[type]['file'].indexOf(file)] = data;
-
-      //    _numberRead++;
-      //    if (_numberRead == _numberOfFiles) {
-
-      //      // all done, start the parsing
-      //      parse(_data);
-
-      //    }
-
-      //  };
-      // };
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-
-
-
-
-
-    // function parseDCM2(file){
-    //     var p = new X.parserDCM();
-    //     var b = new X.base();
-    //     var o = new X.object();
-
-
-    //     var reader = new FileReader();
-    //     reader.onload = function(file) {
-    //         var arrayBuffer = reader.result;
-    //         var byteArray = new Uint8Array(arrayBuffer);
-    //         p.parse(p, b, byteArray, error());
-    //         console.log(p);
-    //         console.log("done!")
-
-    //     }
-
-    //     function error(){
-    //         console.log("a7aaa!");
-    //     }
-
-    //     reader.readAsArrayBuffer(file);
-
-    // }
-
-
-
-
-
-
-
-
-
-        ///////////////////////////////////////////////////////
-        // var reader = new FileReader();   
-        // reader.onprogress = updateProgress;
-        // reader.readAsDataURL(file);
-        // reader.onload = function(e) {
-        //     // get file content
-        //     dataURLArray.push( e.target.result)
-        //     //
-        //     
-        //     // 
-        //     check(dataURLArray,myFiles);                
-        // }
-
-
-
-         // initialize renderers
-
-
-   // // add callbacks for computing
-   // volume.onComputing = function(direction) {
-   //   //console.log('computing', direction);
-   // }
-
-   // volume.onComputingProgress = function(value) {
-   //   //console.log(value);
-   // }
-
-   // volume.onComputingEnd = function(direction) {
-   //   //console.log('computing end', direction);
-   // }
-
-  

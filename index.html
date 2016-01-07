@@ -1,13 +1,43 @@
 <!DOCTYPE html>
+
+<!-- 
+-fix UI all three
+- top and bottom circle (line vs shaded)
+-third one bigger
+-thicken surface with some amount
+-check when multiple are loaded
+-download coor
+-thicken red line
+-center view
+-name of downloaded stl
+-check putting all three things not in order
+- generate cusps becomes "hold on"
+-lighting - fixed now with 8 point lights
+-which cusp is which
+
+- about
+
+
+
+
+
+-->
+
+
+
 <html lang="en">
     <head>
-        <title>av</title>
+        <title>Mecano Aortic Valve</title>
         <meta charset="utf-8">
+
+        <link rel="shortcut icon" href="img/favicon.png">
+
+
         <!-- LIB SCRIPTS -->
-	    <script type="text/javascript" src="libScripts/three.min.js"></script>
+        <script type="text/javascript" src="libScripts/three.min.js"></script>
         <script type="text/javascript" src="libScripts/stlLoader.js"></script>
         <script type="text/javascript" src="libScripts/TrackballControls.js"></script>
-        <script type="text/javascript" src="libScripts/jquery-1.8.2.js"></script>
+        <script type="text/javascript" src="libScripts/jquery-1.11.3.min.js"></script>
         <script type="text/javascript" src='libScripts/nprogress.js'></script>
 <!--         // <script type="text/javascript" src='libScripts/math.min.js'></script>
         // <script type="text/javascript" src='libScripts/numeric-1.2.6.min.js'></script> -->
@@ -19,79 +49,153 @@
         <script type="text/javascript" src="libScripts/NURBSCurve.js"></script>
         <script type="text/javascript" src="libScripts/NURBSSurface.js"></script>
         <script type="text/javascript" src="libScripts/NURBSUtils.js"></script>
+        <script type="text/javascript" src="libScripts/FileSaver.min.js"></script>
+
+
+    
+        <script type="text/javascript" src="libScripts/bootstrap.min.js"></script>
+
+
+
+
+
+
+        <!--style-->
+        <link rel="stylesheet" type="text/css" href="css/style.css">
+        <link rel='stylesheet' href='css/nprogress.css'/>
+
+        <link rel="stylesheet" href="css/bootstrap.css"> 
+        <link rel="stylesheet" href="css/bootstrap-theme.css"> 
+        <link rel="stylesheet" href="css/font-awesome.min.css"> <!-- load fontawesome -->
+        <link rel="stylesheet" href="css/bootstrap.vertical-tabs.css">
+        <link rel="stylesheet" href="css/slider.css">
 
 
         
 
 
-
-
-	    <!--style-->
-		<link rel="stylesheet" type="text/css" href="css/style.css">
-        <link rel='stylesheet' href='css/nprogress.css'/>
-
-
     </head>
     <body>
 
-        <div id="header">
 
-                generate parametric av 150826
-
+    <nav class="navbar navbar-default navbar-static-top">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="index.html"><b> Mecano Aortic Valve </b> <i> web utility for generating aortic valve cusps </i> </a>
         </div>
-        <div id="main">
-                
+        <div id="navbar" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="about.html">about</a></li>
+          </ul>
+        </div><!--/.nav-collapse -->
 
-            <div id="container1" >
 
-                <div id = "text1">
-                    drop dicom
-                </div>
+
+
+      </div>
+    </nav>
+
+
+
+<div class="container" id = "main" >
+
+
+
+
+  <div class="row "> 
+
+    <!--           -->
+    <div class="col-md-4" > 
+      <div class="my-inner" >
+        <div id="container1" >
+                <img src="img/guide.jpg" id="con1Logo"> </img>
+                 <div id = "text1a"> </div>
+                 <br>
+                 drop .csv here formatted as such:<br>P0, -9.462358, -0.20132, 1669.094232<br> 
+                 P1, -3.573614, -9.771409, 1674.504326<br> P2... <br>
+                    .<br>.<br>P6...
+        </div>
+      </div>
+    </div> 
+
+    <!--           -->
+    <div class="col-md-4" > 
+      <div class="my-inner" >
+            <div id="container2" >
+               <img src="img/wall.jpg" id="con2Logo"> </img> 
+                <div id = "text2a"></div>
+                <br>
+                drop aortic sinus .stl file here
+            </div>
+      </div> 
+    </div> 
+
+    <!--           -->
+    <div class="col-md-4" > 
+      <div class="my-inner" >
+            <div id="container3" >
+               <img src="img/calcium.jpg" id="con3Logo"> </img>
+                <div id = "text3a"></div>
+                <br>
+                drop calcium .stl file here (optional)
 
             </div>
-
-            <svg id="mySVG" />
-
-            <div id = "text1a">
-                    
-            </div>
-
-            <button id="tempThree"> temp three button</button>
+      </div> 
+    </div> 
 
 
 
-               
-        </div>
+
+<!-- <div id='mySliderDiv'></div> -->
+
+
+  </div> <!-- end of row -->
+  <div id = 'prompt1'>
+
+  <hr id="con2line1"> <p id = "prompt2text" > - Not For Clinical Use - </p> <hr id="con2line2">
+</div>
+
+
+
+
+
+
+</div> <!-- end of main -->
+
+
 
             
-
-
-
     </body>
 
 
     <!-- MY SCRIPTS -->
+    <script type="text/javascript" src="scripts/webHopper.js"></script> <!-- webhopper -->
+    <script type="text/javascript" src="scripts/scenes.js"></script> <!-- THREE JS boiler -->
     <script type="text/javascript" src="scripts/main.js"></script>
-    <script type="text/javascript" src="scripts/pointExtract.js"></script>
     <script type="text/javascript" src="scripts/threeD.js"></script>
-    <script type="text/javascript" src="scripts/parametric.js"></script>
+    <script type="text/javascript" src="scripts/gui.js"></script>
+    <script type="text/javascript" src="scripts/download.js"></script>
 
 
 
-
+    <script type="text/javascript" src="scripts/pointExtract.js"></script>
 
 
 
     <script type="x-shader/x-vertex" id="vertexShader">
-        // Put the Vertex Shader code here
+
+       
     </script>
 
     <script type="x-shader/x-vertex" id="fragmentShader">
-        // Put the Fragment Shader code here
+
     </script>
-
-
-
 
 
 
