@@ -58,10 +58,33 @@
      <div class="jumbotron" style=" font-size: 16px; background-color: #f8f8f8; ">
 
 
-          This project is browser-based utility to align and compare stl files. 
+          This project is browser-based utility to generate aortic valve cusps that are usually difficult to resolve and segment from CT data. 
           <br>
           <br>
-          
+          <strong> 1. </strong> Upload the 7 point coordinates as .csv, the aortic sinus and calcium both as .stl
+          <br>
+          <br>
+          <strong> 2. </strong> Adjust the general sag amount.
+          <img src="img/diag_2.jpg" width="100%"></img> 
+          <br>
+          <br>
+          <strong> 3. </strong> Set the sinus opacity to 0. Starting with the left cusp, adjust the 5 surface parameters so that the resultant surface goes midway through the calcium blobs. Repeat for the non-coronary and right cusps.
+          <img src="img/diag_5.jpg" width="100%"></img> 
+          <br>
+          <br>
+          <strong> 4. </strong> Set the sinus opacity back to around 1. Move the 6 fiduciary points into the aortic sinus so that the tiny white spheres are within the sinus wall. Try to bury the red outline curve into the sinus as much as possible. This is to ensure the cusps are connected to the sinus.
+          <img src="img/diag_1.jpg" width="100%"></img> 
+          <img src="img/diag_3.jpg" width="100%"></img> 
+          <br>
+          <br>
+          <strong> 5. </strong> Move the 3 fiduciary points at the annular plane up or down if their position is off - try to have them match the sinus.
+          <img src="img/diag_4.jpg" width="100%"></img> 
+          <br>
+          <br>
+          <strong> 6. </strong> Download the cusp.stl.
+          <img src="img/diag_6.jpg" width="100%"></img> 
+          <br>
+          <br>
         Let <a href="http://ahmedhosny.net" target="_blank">me</a> know if you have any thoughts or comments..
 
 

@@ -363,9 +363,9 @@ function addGuiElement(guiFolder, coor,coor2,index,vectorList){
 
 function dummyTrigger(){
    // change all three midpoints
-    moveSphere(sphereList[7],7,topPlaneNormal.normalize(),-0.5);
-    moveSphere(sphereList[8],8,topPlaneNormal.normalize(),-0.5);
-    moveSphere(sphereList[9],9,topPlaneNormal.normalize(),-0.5);
+    moveSphere(sphereList[7],7,topPlaneNormal.normalize(),-2.5);
+    moveSphere(sphereList[8],8,topPlaneNormal.normalize(),-2.5);
+    moveSphere(sphereList[9],9,topPlaneNormal.normalize(),-2.5);
     for (var i = 0 ; i < 3 ; i ++ ){
         myScene3.remove(myScene3.getObjectByName( myCuspList[i] ) )
         myScene3.remove(myScene3.getObjectByName( myCuspList[i]+"_outline" ) )

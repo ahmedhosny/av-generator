@@ -146,19 +146,11 @@ function mainSwitch(){
         makeRCusp(projectedP0,normNcenterTop);
 
 
-
-        // here they are moved -2.0 
-        // move midpoints a bit down before the scene starts:
-        moveSphere(sphereList[7],7,topPlaneNormal.normalize(),-2.0);
-        moveSphere(sphereList[8],8,topPlaneNormal.normalize(),-2.0);
-        moveSphere(sphereList[9],9,topPlaneNormal.normalize(),-2.0);
-
         //10// draw cusp1
         drawSurface(  LCusp_Index  , "L_cusp" );
         drawSurface(  NCCusp_Index  , "NC_cusp" );
         drawSurface(  RCusp_Index  , "R_cusp" );
-
-        
+      
 
         drawConstructionLines(constructionLineList , myScene3);
 
