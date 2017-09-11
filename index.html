@@ -25,52 +25,27 @@
 -->
 
 
-
+<!DOCTYPE html>
 <html lang="en">
     <head>
-        <title>Mecano Aortic Valve</title>
+        <title>Aortic leaflets generator</title>
         <meta charset="utf-8">
-
-        <link rel="shortcut icon" href="img/favicon.png">
-
-
         <!-- LIB SCRIPTS -->
-        <script type="text/javascript" src="libScripts/three.min.js"></script>
-        <script type="text/javascript" src="libScripts/stlLoader.js"></script>
-        <script type="text/javascript" src="libScripts/TrackballControls.js"></script>
-        <script type="text/javascript" src="libScripts/jquery-1.11.3.min.js"></script>
-        <script type="text/javascript" src='libScripts/nprogress.js'></script>
-<!--         // <script type="text/javascript" src='libScripts/math.min.js'></script>
-        // <script type="text/javascript" src='libScripts/numeric-1.2.6.min.js'></script> -->
-        <script type="text/javascript" src="libScripts/xtk.js"></script>
-        <script type="text/javascript" src="libScripts/dicomParser.js"></script>
-        <script type="text/javascript" src="libScripts/snap.svg.js"></script>
-<!--         // <script type="text/javascript" src="libScripts/xtk_xdat.gui.js"></script> -->
-        <script type="text/javascript" src="libScripts/dat.gui.min.js"></script>
-        <script type="text/javascript" src="libScripts/NURBSCurve.js"></script>
-        <script type="text/javascript" src="libScripts/NURBSSurface.js"></script>
-        <script type="text/javascript" src="libScripts/NURBSUtils.js"></script>
-        <script type="text/javascript" src="libScripts/FileSaver.min.js"></script>
 
 
-    
-        <script type="text/javascript" src="libScripts/bootstrap.min.js"></script>
-
-
-
-
+        
 
 
         <!--style-->
-        <link rel="stylesheet" type="text/css" href="css/style.css">
-        <link rel='stylesheet' href='css/nprogress.css'/>
 
         <link rel="stylesheet" href="css/bootstrap.css"> 
         <link rel="stylesheet" href="css/bootstrap-theme.css"> 
         <link rel="stylesheet" href="css/font-awesome.min.css"> <!-- load fontawesome -->
         <link rel="stylesheet" href="css/bootstrap.vertical-tabs.css">
-        <link rel="stylesheet" href="css/slider.css">
+        <link rel="stylesheet" type="text/css" href="css/style.css">
 
+
+        <!-- google analytic script -->
         <script>
   (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
   (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
@@ -82,15 +57,13 @@
 
 </script>
 
-
-        
+    
 
 
     </head>
     <body>
 
-
-    <nav class="navbar navbar-default navbar-static-top">
+ <nav class="navbar navbar-default navbar-static-top">
       <div class="container">
         <div class="navbar-header">
           <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
@@ -99,11 +72,12 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="index.html"><b> Mecano Aortic Valve </b> <i> web utility for generating aortic valve cusps </i> </a>
+          <a class="navbar-brand" href="index.html">A web tool for generating aortic valve leaflets</i> </a>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav navbar-right">
-            <li><a href="about.html">about</a></li>
+            <li><a target="_blank" href="about.html">instructions</a></li>
+              <li><a target="_blank" href="https://youtu.be/6ZdiZdl7wZk">demo</a></li>
           </ul>
         </div><!--/.nav-collapse -->
 
@@ -112,6 +86,7 @@
 
       </div>
     </nav>
+
 
 
 
