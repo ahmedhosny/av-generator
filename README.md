@@ -24,9 +24,15 @@ P6...
 3. A .stl file of the calcified deposits
 
 ## Extract fiduciary points from 3D Slicer (uses RAS coordinate system by default)
+
+Use the "Markers" module to extract the points
+
 [![extract fiduciary points](https://img.youtube.com/vi/7CfuikPJ3cI/0.jpg)](https://www.youtube.com/watch?v=7CfuikPJ3cI&feature=youtu.be)
 
 ## Export stl from 3D Slicer (make sure RAS coordinate is set)
+
+Use the "Segment Editor" module. Once you are happy with the segmentation (either done manually, through thresholding, or a combination of both), export it with RAS coordinates.
+
 [![export stl](https://img.youtube.com/vi/cMTlLVS4Mlo/0.jpg)](https://www.youtube.com/watch?v=cMTlLVS4Mlo&feature=youtu.be)
 
 ## Citation
