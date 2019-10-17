@@ -23,7 +23,18 @@ P6...
 
 3. A .stl file of the calcified deposits
 
+## Extract fiduciary points from 3D Slicer (uses RAS coordinate system by default)
+[![extract fiduciary points](https://img.youtube.com/vi/7CfuikPJ3cI/0.jpg)](https://www.youtube.com/watch?v=7CfuikPJ3cI&feature=youtu.be)
+
+## Export stl from 3D Slicer (make sure RAS coordinate is set)
+[![export stl](https://img.youtube.com/vi/cMTlLVS4Mlo/0.jpg)](https://www.youtube.com/watch?v=cMTlLVS4Mlo&feature=youtu.be)
+
+## Citation
+Please cite our paper if you end up using out tool:  
+[Pre-procedural Fit-testing of Transcatheter Aortic Valve Replacement (TAVR) Valves Using Parametric Modeling and 3D Printing](https://ahmedhosny.com/files/05_papers/preprocedural_fit_testing_TAVR.pdf)  
+A Hosny, J Dilley, T Kelil, M Mathur, M Dean, JC Weaver & B Ripley  
+Journal of Cardiovascular Computed Tomography 2018
+
+
 ## Need help?
 Watch this quick [movie](https://youtu.be/6ZdiZdl7wZk) or check out these [instructions](http://ahmedhosny.github.io/av-generator/about.html). Email [me](mailto:ahmed_hosny@dfci.harvard.edu) .
-
-
