@@ -246,8 +246,8 @@ window.onload = function() {
 
     function getCoord(myString){
 
-        var multiX = -1;
-        var multiY = -1;
+        var multiX = 1;
+        var multiY = 1;
         var multiZ = 1;
 
         var rows = myString.split("\n");
