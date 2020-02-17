@@ -266,7 +266,8 @@ window.onload = function() {
         tempFidPointList.push(P5);
         P6 = new THREE.Vector3(  parseFloat( rows[6].split(',')[1] ) * multiX, parseFloat( rows[6].split(',')[2] ) * multiY, parseFloat( rows[6].split(',')[3] ) * multiZ  );
         tempFidPointList.push(P6);
-
+        
+        console.log(P0, P1, P2, P3, P4, P5, P6)
         //
         // top plane
         //
